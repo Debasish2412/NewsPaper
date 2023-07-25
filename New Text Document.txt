@@ -1,0 +1,64 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
+public class NewspaperSubscription {
+private Map<String, List<Double>> newspapers;
+
+public NewspaperSubscription() {
+    newspapers = new HashMap<>();
+    newspapers.put("TOI", List.of(3.0, 3.0, 3.0, 3.0, 3.0, 5.0, 6.0));
+    newspapers.put("Hindu", List.of(2.5, 2.5, 2.5, 2.5, 2.5, 4.0, 4.0));
+    newspapers.put("ET", List.of(4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 10.0));
+    newspapers.put("BM", List.of(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5));
+    newspapers.put("HT", List.of(2.0, 2.0, 2.0, 2.0, 2.0, 4.0, 4.0));
+}
+
+public List<List<String>> findCombinations(double budget) {
+    List<String> newspaperNames = new ArrayList<>(newspapers.keySet());
+    List<List<String>> validCombinations = new ArrayList<>();
+    backtrack(0, budget, new ArrayList<>(), newspaperNames, validCombinations);
+    return validCombinations;
+}
+
+private void backtrack(int index, double remainingBudget, List<String> currentCombination, List<String> newspaperNames, List<List<String>> validCombinations) {
+    if (remainingBudget == 0) {
+        validCombinations.add(new ArrayList<>(currentCombination));
+        return;
+    }
+
+    for (int i = index; i < newspaperNames.size(); i++) {
+        String newspaperName = newspaperNames.get(i);
+        List<Double> prices = newspapers.get(newspaperName);
+        for (int j = 0; j < prices.size(); j++) {
+            double price = prices.get(j);
+            if (remainingBudget >= price) {
+                currentCombination.add(newspaperName);
+                backtrack(i, remainingBudget - price, currentCombination, newspaperNames, validCombinations);
+                currentCombination.remove(currentCombination.size() - 1);
+            }
+        }
+    }
+}
+
+public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.print("Enter your weekly budget in rupees: ");
+    double weeklyBudget = scanner.nextDouble();
+    NewspaperSubscription newspaperSubscription = new NewspaperSubscription();
+    List<List<String>> combinations = newspaperSubscription.findCombinations(weeklyBudget);
+
+    if (!combinations.isEmpty()) {
+        System.out.println("Possible combinations of newspaper subscriptions:");
+        for (List<String> combination : combinations) {
+            System.out.println(combination);
+        }
+    } else {
+        System.out.println("No valid combinations found within the given budget.");
+    }
+}
+}
+
+
